@@ -1,37 +1,32 @@
-# NextGen-Helfer / Isya Gold
+# NextGen-Helfer – Isya Gold 4.1 (C++20)
 
-**Status:** initialer nativer **C++20-Windows-Build** mit einem kleinen Wiki-Datenbrowser. Der umfangreiche Live-Scanner aus Isya Gold 4.1 ist **noch nicht** in dieses Repository migriert. Diese Basis soll zuerst reproduzierbar unter Windows bauen und testbar sein.
+Dieses Repository enthält jetzt den ursprünglichen Isya-Gold-4.1-Entwicklungsstand als **native C++20 Windows-Anwendung mit lokaler Weboberfläche**, zusätzlich zum bisherigen kleinen Win32-Wiki-Datenbrowser.
 
-## Windows-EXE direkt von GitHub laden
+## Build herunterladen
 
-1. Im Repo **Actions** öffnen.
-2. **Windows x64 – Native Build** wählen; den aktuellen erfolgreichen Run öffnen.
-3. Unter **Artifacts** die Datei `NextGen-Helfer-Windows-x64` herunterladen.
-4. ZIP entpacken und `NextGenHelfer.exe` starten. `data/resources.tsv` neben der EXE belassen.
+Öffne **Actions → Isya Gold 4.1 - Native Windows OCR Build → erfolgreicher Lauf → Artifacts → IsyaGold-4.1-Windows-x64**. ZIP entpacken und **`app/STARTEN_CPP_SCANNER.bat`** starten. Der Browser öffnet **http://127.0.0.1:8765**.
 
-Neue Commits und Pull Requests lösen automatisiert einen Windows-Build und Tests aus. Das Build-Artefakt ist **kein offizielles Release** und kann gemäß GitHub-Aufbewahrungsfristen ablaufen.
+**Der Build muss erfolgreich durchlaufen, bevor die EXE als verfügbar gilt.** Der Quellcode und der CI-Workflow allein sind kein Beweis, dass der komplette Windows-Live-Scanner funktioniert.
 
-## Lokaler Windows-Build (ohne vcpkg, Python oder Qt)
+- Inklusive Bildschirm-OCR und Shop-Preisprüfung (manuell zu bestätigende Ergebnisse)
+- Bedarfsliste, Einkaufsgrenzen, Rohstoff- und Drop-Namenmarker über sichtbaren Beschriftungen
+- Vollständige ältere Web-Wirtschaftsoberfläche: Rezepte, Crafting-Kalkulation, Ressourcen- und NPC-Finder, Shop-Journal, Klassen- und Level-Guides
+- `IsyaShnInspect.exe`: SHN-Tabelle lesend exportieren und Schema inspizieren; aktuelle `Produce.shn` benötigt, um echte Rezepte zuordnen zu können
 
-Benötigt: Visual Studio 2022 mit Desktopentwicklung C++ und CMake.
+## Architektur und Build
 
-```powershell
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure
-```
+- `app/` – Shop- und Wirtschaftsdashboard, Live-Scanner-Frontend
+- `native/` – OCR, Bildschirmaufnahme, lokaler HTTP-Dienst, Weltmarker, SHN-Reader und Tests
+- `scripts/` – lokaler Windows-Build, OCR-Setup, SHN-Datenexport
+- `.github/workflows/isya-gold-native.yml` – Linux-Kerntests und MSVC-Windows-Build mit vcpkg
+- `src/`, `tests/`, `data/` – erste experimentelle Win32-Wiki-Browser-Basis, separat in `.github/workflows/windows-build.yml` gebaut
 
-Die ausführbare Datei liegt unter `build/Release/NextGenHelfer.exe`. Für einen manuellen Test den Ordner `data` neben die EXE kopieren.
+Zum lokalen Bauen: **Visual Studio 2022 C++ Desktop, CMake, Git** installieren, dann `scripts/BUILD_WINDOWS.ps1` starten; vcpkg stellt die weiteren Abhängigkeiten bereit.
 
-## Was bereits enthalten ist
+## Test- und Datenstatus
 
-- Native Win32-Oberfläche zum Durchsuchen ausgewählter **Fiesta-Wiki-Rohstoffe und -Rezepte** und Öffnen der Belegquellen.
-- CSV-/TSV-Datenimport aus `data/resources.tsv` (UTF-8).
-- Automatischer MSVC-x64-Build mit Tests und herunterladbarem ZIP.
-- Kein automatisiertes Spielen, keine Mausklicks und keine Manipulation des Fiesta-Clients.
+**Wichtig:** Erst die Tests und ein manueller Windows-Test entscheiden, ob die Migration vollständig funktioniert. Der Linux-SHN-Test aus 4.1 wurde wegen falscher synthetischer Testdaten berichtigt; er prüft weiterhin **keine echte aktuelle SHN-Datei**. Die 3D-Rohstoffmodell-Erkennung aus NIFs ist noch nicht umgesetzt. Der Marker erkennt sichtbare Textbeschriftungen, keine verborgenen Drops oder Spawnpunkte.
 
-Die Wiki-Daten sind historische Community-Angaben und **nicht** als Oktober-2026-Live-Stand zu verstehen. Genaue Herkunft steht in [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md).
+Die älteren Fiesta-Wiki-Daten sind *nicht* auf Aktualität für deutsche offizielle Server verifiziert. Es gibt keine automatisierten Spielaktionen, Client-Injektion oder Speicher-/Netzwerkmanipulation. Für externe Overlays liegt keine ausdrückliche Betreiberfreigabe vor.
 
-## Ausblick
-
-Siehe [docs/ROADMAP.md](docs/ROADMAP.md). Der bisherige 4.1-Quellstand ist ein separates Archiv und wird erst nach bestandenen Build-/Kompatibilitätstests modular übernommen. Künftige SHN-Importe brauchen echte aktuelle `Produce.shn`-/`ItemInfo.shn`-Dateien.
+Siehe [docs/ROADMAP.md](docs/ROADMAP.md) und [docs/WELT_MARKIERUNG.md](docs/WELT_MARKIERUNG.md).

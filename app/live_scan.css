@@ -1,0 +1,12 @@
+#live-scanner-panel .live-shot{display:block;width:100%;height:auto;max-height:none;cursor:crosshair;border-radius:9px;border:1px solid #4b6280;background:#122235;touch-action:none;margin:10px 0;}
+#live-scanner-panel .live-selection-actions{display:flex;gap:15px;flex-wrap:wrap;margin-top:12px;color:#b6cae2;font-size:12px}
+#live-scanner-panel .live-selection-actions label{cursor:pointer}
+#live-scanner-panel .live-ocr-preview{background:#122235;border:1px solid #394d65;border-radius:11px;margin-top:13px;padding:14px;min-height:95px;overflow:auto}
+#live-scanner-panel .live-raw pre{white-space:pre-wrap;max-height:145px;overflow-y:auto;font-size:12px}
+#live-scanner-panel .live-review-table input{width:100%;min-width:75px;border-radius:6px;color:#f5f8fd;background:#111e31;border:1px solid #435773;padding:6px;font-size:12px}
+#live-scanner-panel .live-review-table input[type=checkbox]{width:18px;min-width:18px;height:18px}
+#live-scanner-panel .live-review-table td:nth-child(2){min-width:190px}
+#live-scanner-panel .live-review-table td:nth-child(3){min-width:135px}
+#live-scanner-panel .live-review-table td:nth-child(4){min-width:100px}
+#live-scanner-panel .live-review-table td:nth-child(5){min-width:100px}
+#live-scanner-panel .live-columns{gap:22px}
