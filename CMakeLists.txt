@@ -1,0 +1,28 @@
+cmake_minimum_required(VERSION 3.22)
+project(NextGenHelfer VERSION 0.1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_library(isya_catalog STATIC src/catalog.cpp)
+target_include_directories(isya_catalog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+if(MSVC)
+  target_compile_options(isya_catalog PRIVATE /W4 /EHsc /utf-8)
+else()
+  target_compile_options(isya_catalog PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+if(WIN32)
+  add_executable(NextGenHelfer WIN32 src/main_win.cpp)
+  target_compile_definitions(NextGenHelfer PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
+  target_link_libraries(NextGenHelfer PRIVATE isya_catalog user32 gdi32 shell32)
+  if(MSVC)
+    target_compile_options(NextGenHelfer PRIVATE /W4 /EHsc /utf-8)
+  endif()
+endif()
+
+enable_testing()
+add_executable(isya_catalog_test tests/catalog_test.cpp)
+target_link_libraries(isya_catalog_test PRIVATE isya_catalog)
+add_test(NAME catalog_data COMMAND isya_catalog_test "${CMAKE_CURRENT_SOURCE_DIR}/data/resources.tsv")

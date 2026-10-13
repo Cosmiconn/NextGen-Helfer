@@ -1,0 +1,51 @@
+name: Windows x64 - Native Build
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Build and package
+    runs-on: windows-2022
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure CMake x64
+        shell: pwsh
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build Release
+        shell: pwsh
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Run tests
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Package Windows EXE and data
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path dist/NextGen-Helfer | Out-Null
+          Copy-Item build/Release/NextGenHelfer.exe dist/NextGen-Helfer/
+          Copy-Item -Recurse data dist/NextGen-Helfer/data
+          Copy-Item README.md dist/NextGen-Helfer/
+          Copy-Item -Recurse docs dist/NextGen-Helfer/docs
+          Compress-Archive -Path dist/NextGen-Helfer -DestinationPath dist/NextGen-Helfer-Windows-x64.zip -Force
+          if (!(Test-Path dist/NextGen-Helfer-Windows-x64.zip)) { throw 'ZIP wurde nicht erzeugt' }
+
+      - name: Upload downloadable ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: NextGen-Helfer-Windows-x64
+          path: dist/NextGen-Helfer-Windows-x64.zip
+          if-no-files-found: error
+          retention-days: 30
