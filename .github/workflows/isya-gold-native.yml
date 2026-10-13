@@ -79,6 +79,7 @@ jobs:
           Copy-Item -Recurse app/tessdata dist/IsyaGold/app/tessdata
           Copy-Item app/IsyaGoldNative.exe dist/IsyaGold/app/
           Copy-Item build-native/Release/IsyaShnInspect.exe dist/IsyaGold/app/
+          Copy-Item build-native/Release/IsyaShnCatalog.exe dist/IsyaGold/app/
           Copy-Item -Recurse scripts dist/IsyaGold/scripts
           Copy-Item -Recurse docs dist/IsyaGold/docs
           Copy-Item -Recurse data dist/IsyaGold/data

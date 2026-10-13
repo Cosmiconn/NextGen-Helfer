@@ -35,5 +35,7 @@ $exe = Join-Path $root 'app\IsyaGoldNative.exe'
 if (-not (Test-Path $exe)) {throw "EXE nicht gefunden: $exe"}
 $cli = Join-Path $build 'Release\IsyaShnInspect.exe'
 if (Test-Path $cli) {Copy-Item -Path $cli -Destination (Join-Path $root 'app\IsyaShnInspect.exe') -Force}
+$joined = Join-Path $build 'Release\IsyaShnCatalog.exe'
+if (Test-Path $joined) {Copy-Item -Path $joined -Destination (Join-Path $root 'app\IsyaShnCatalog.exe') -Force}
 Write-Host "Build erfolgreich: $exe" -ForegroundColor Green
 Write-Host 'Als naechstes scripts\SETUP_TESSDATA.ps1 ausfuehren und app\STARTEN_CPP_SCANNER.bat starten.'

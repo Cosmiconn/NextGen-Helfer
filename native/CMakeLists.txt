@@ -32,3 +32,7 @@ if(WIN32)
   set_target_properties(IsyaGoldNative PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../app"
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}/../app")
 endif()
+
+# Offline SHN import tool (no UI, OCR or gameplay interaction).
+add_executable(IsyaShnCatalog src/shn_catalog_export.cpp)
+target_link_libraries(IsyaShnCatalog PRIVATE isya_logic)
