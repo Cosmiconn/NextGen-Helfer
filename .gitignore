@@ -8,3 +8,7 @@
 *.obj
 *.ilk
 .vs/
+
+# User-provided game data: never publish on public GitHub.
+*.shn
+/exports/

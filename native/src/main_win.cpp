@@ -88,8 +88,8 @@ Frame virtual_screen(){return grab(GetSystemMetrics(SM_XVIRTUALSCREEN),GetSystem
 std::optional<Frame> grab_relative(const Rect& r,POINT cursor){
   int sx=GetSystemMetrics(SM_XVIRTUALSCREEN),sy=GetSystemMetrics(SM_YVIRTUALSCREEN);
   int ex=sx+GetSystemMetrics(SM_CXVIRTUALSCREEN),ey=sy+GetSystemMetrics(SM_CYVIRTUALSCREEN);
-  int x=std::max(sx,cursor.x+r.dx),y=std::max(sy,cursor.y+r.dy);
-  int right=std::min(ex,cursor.x+r.dx+r.w),bottom=std::min(ey,cursor.y+r.dy+r.h);
+  int x=std::max(sx,static_cast<int>(cursor.x)+r.dx),y=std::max(sy,static_cast<int>(cursor.y)+r.dy);
+  int right=std::min(ex,static_cast<int>(cursor.x)+r.dx+r.w),bottom=std::min(ey,static_cast<int>(cursor.y)+r.dy+r.h);
   if(right-x<8||bottom-y<8)return std::nullopt;
   return grab(x,y,right-x,bottom-y);
 }
