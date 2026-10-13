@@ -94,7 +94,9 @@ int main(int argc,char** argv) {
   for(const auto& r:p.rows) {
    auto id=get(r,pc,"ProductID");
    if(!seen.insert(id).second)throw std::runtime_error("Duplicate recipe "+id);
-   auto desc=get(r,pc,"Name"),key=get(r,pc,"Product"),prod=resolve(key);
+   auto desc=get(r,pc,"Name");
+   auto key=get(r,pc,"Product");
+   auto prod=resolve(key);
    auto cat=category(desc,prod.second);
    int lv=tier(desc);if(!lv)lv=tier(prod.second);
    if(lv==0)++unknownTiers; counts[cat]++;
