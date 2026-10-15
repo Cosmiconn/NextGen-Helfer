@@ -3,6 +3,11 @@ project(IsyaGoldNative VERSION 4.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+# Match the static CRT used by vcpkg triplet x64-windows-static.
+# Without this MSVC chooses /MD and tesseract55.lib expects /MT (LNK2038).
+if(MSVC)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 add_library(isya_logic src/logic.cpp src/world_match.cpp src/shn_reader.cpp)
 target_include_directories(isya_logic PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 if(MSVC)
