@@ -1,0 +1,9 @@
+{
+  "name": "isya-gold-native",
+  "version-string": "4.1.0",
+  "dependencies": [
+    "cpp-httplib",
+    "nlohmann-json",
+    "tesseract"
+  ]
+}

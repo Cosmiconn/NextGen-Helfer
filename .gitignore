@@ -1,0 +1,14 @@
+/build*/
+/.tools/
+/exports/
+/app/*.exe
+/app/*.dll
+/app/tessdata/
+*.pdb
+*.obj
+*.ilk
+.vs/
+
+# User-provided game data: never publish on public GitHub.
+*.shn
+/exports/

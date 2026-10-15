@@ -1,0 +1,94 @@
+name: Isya Gold 4.1 - Native Windows OCR Build
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  core-linux:
+    name: C++ SHN and logic tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure and build native test tools
+        run: |
+          cmake -S native -B build-core -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-core --parallel 4
+          ctest --test-dir build-core -C Release --output-on-failure
+  windows-native:
+    name: Build Live Scanner x64
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare vcpkg
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (Test-Path 'C:\vcpkg\scripts\buildsystems\vcpkg.cmake') {
+            $root = 'C:\vcpkg'
+          } elseif ($env:VCPKG_INSTALLATION_ROOT -and (Test-Path (Join-Path $env:VCPKG_INSTALLATION_ROOT 'scripts/buildsystems/vcpkg.cmake'))) {
+            $root = $env:VCPKG_INSTALLATION_ROOT
+          } else {
+            $root = Join-Path $env:RUNNER_TEMP 'vcpkg'
+            & git clone --depth 1 https://github.com/microsoft/vcpkg.git $root
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot clone vcpkg' }
+            & (Join-Path $root 'bootstrap-vcpkg.bat') -disableMetrics
+            if ($LASTEXITCODE -ne 0) { throw 'vcpkg bootstrap failed' }
+          }
+          "ISYA_VCPKG_ROOT=$root" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          New-Item -ItemType Directory -Force '.vcpkg-cache' | Out-Null
+      - name: Cache vcpkg binary builds
+        uses: actions/cache@v4
+        with:
+          path: .vcpkg-cache
+          key: vcpkg-win-static-${{ hashFiles('native/vcpkg.json') }}-v1
+      - name: Configure MSVC and vcpkg
+        shell: pwsh
+        run: |
+          $env:VCPKG_DEFAULT_BINARY_CACHE = (Resolve-Path '.vcpkg-cache').Path
+          & cmake -S native -B build-native -G 'Visual Studio 17 2022' -A x64 "-DCMAKE_TOOLCHAIN_FILE=$env:ISYA_VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" '-DVCPKG_TARGET_TRIPLET=x64-windows-static'
+          if ($LASTEXITCODE -ne 0) { throw 'CMake configure failed' }
+      - name: Build Release
+        shell: pwsh
+        run: |
+          & cmake --build build-native --config Release --parallel 4
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+      - name: Run Windows tests
+        shell: pwsh
+        run: |
+          & ctest --test-dir build-native -C Release --output-on-failure
+          if ($LASTEXITCODE -ne 0) { throw 'CTest failed' }
+      - name: Download OCR language files
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Force -ItemType Directory app/tessdata | Out-Null
+          foreach ($lang in @('eng','deu')) {
+            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/tesseract-ocr/tessdata_fast/main/$lang.traineddata" -OutFile "app/tessdata/$lang.traineddata"
+            if ((Get-Item "app/tessdata/$lang.traineddata").Length -lt 1000000) { throw "Invalid tessdata for $lang" }
+          }
+      - name: Prepare portable app
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force dist/IsyaGold/app | Out-Null
+          Copy-Item app/*.html,app/*.js,app/*.css,app/*.bat dist/IsyaGold/app/ -Force
+          Copy-Item -Recurse app/tessdata dist/IsyaGold/app/tessdata
+          Copy-Item app/IsyaGoldNative.exe dist/IsyaGold/app/
+          Copy-Item build-native/Release/IsyaShnInspect.exe dist/IsyaGold/app/
+          Copy-Item build-native/Release/IsyaShnCatalog.exe dist/IsyaGold/app/
+          Copy-Item -Recurse scripts dist/IsyaGold/scripts
+          Copy-Item -Recurse docs dist/IsyaGold/docs
+          Copy-Item -Recurse data dist/IsyaGold/data
+          Copy-Item README.md dist/IsyaGold/
+          if (!(Test-Path dist/IsyaGold/app/IsyaGoldNative.exe)) { throw 'Native exe missing' }
+      - name: Publish Windows EXE package
+        uses: actions/upload-artifact@v4
+        with:
+          name: IsyaGold-4.1-Windows-x64
+          path: dist/IsyaGold/
+          retention-days: 30
+          if-no-files-found: error

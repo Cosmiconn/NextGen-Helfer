@@ -1,0 +1,16 @@
+.watch-panel{border-color:#527063}
+.watch-mini-list{display:grid;gap:6px;margin-top:10px}
+.watch-mini-row{display:flex;justify-content:space-between;align-items:center;gap:9px;background:#142236;border:1px solid #354862;border-radius:8px;padding:7px 9px;font-size:12px}
+.watch-mini-row span{overflow-wrap:anywhere}
+.watch-target-table input{min-width:145px;width:100%;border-radius:7px;padding:7px 9px;background:#112035;border:1px solid #455f7c;color:#f1f6ff}
+.watch-target-table td{font-size:12px}
+.watch-row-needed{background:#21413148}
+.watch-row-done{opacity:.73}
+.watch-row-tag{display:block;color:#7be1ba;font-weight:700;font-size:11px}
+.watch-row-tag.watch-expensive{color:#ffaa9d}
+.watch-overlay-label{align-self:end;padding:9px;max-width:380px;display:flex;align-items:center;gap:8px;line-height:1.3}
+.watch-indicator{border:1px solid #3c546b;border-radius:9px;background:#142236;padding:12px 14px;margin-top:12px}
+.watch-needed{border-color:#5698d8;color:#a5dcff;background:#163451}
+.watch-affordable{border-color:#498369;color:#a1f2c8;background:#173c32}
+.watch-expensive{border-color:#a85656;color:#ffbbb4;background:#50272b}
+.watch-review{border-color:#a5803d;color:#ffde93;background:#493824}
